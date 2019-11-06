@@ -8,12 +8,18 @@ import os
 
 folder = os.path.join(os.path.dirname(__file__), "Marching Man" )
 
-print(folder)
+#filename
+
+file = os.path.join(os.path.dirname(__file__),"Marching Man", "MarchingMan06.dcm")
+
+#print(folder)
 
 reductionFactor = 1.0
 independentComponents = True
 
 colors = vtk.vtkNamedColors()
+
+
 
 #renderer
 
@@ -27,6 +33,7 @@ iren.SetRenderWindow(renWin)
 
 DICOMImageReader = vtk.vtkDICOMImageReader()
 DICOMImageReader.SetDirectoryName(folder)
+#DICOMImageReader.SetFileName(file)
 DICOMImageReader.Update()
 
 
