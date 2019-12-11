@@ -14,8 +14,8 @@ movingImageFilePath = os.path.join(os.path.dirname(__file__), "pictures","moving
 
 
 
-fixedImageFile = fixedImageFilePath
-movingImageFile = fixedImageFilePath
+fixedImageFile = "fixed.png"
+movingImageFile = "moving.png"
 outputImageFile = "output.png"
 differenceImageAfterFile = "after.png"
 differenceImageBeforeFile = "before.png"
