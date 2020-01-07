@@ -9,6 +9,11 @@ import itk
 
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> be773a0d454a339658ba66aa1e901b20108099e9
 fixedImageFile = "fixed.png"
 movingImageFile = "moving.png"
 outputImageFile = "output.png"
