@@ -20,19 +20,21 @@ iren.SetRenderWindow(renWin)
 
 DICOMImageReader = vtk.vtkDICOMImageReader()
 DICOMImageReader.SetDirectoryName(folder)
+
+
 #DICOMImageReader.SetFileName(file)
 DICOMImageReader.Update()
 
-ImageViewer = vtk.vtkImageViewer2()
-ImageViewer.SetInputConnection(DICOMImageReader.GetOutputPort())
-ImageViewer.SetSlice(1)
-
+#ImageSliceMapper
+imageSliceMapper = vtk.vtkImageSliceMapper()
+imageSliceMapper.SetInputConnection(DICOMImageReader.GetOutputPort())
+imageSliceMapper.SetSliceNumber(14)
 
 imgActor= vtk.vtkImageActor()
+imgActor.SetMapper(imageSliceMapper)
 
-ImageViewer.SetupInteractor(iren)
-ImageViewer.Render()
 
+ren.AddActor(imgActor)
 iren.Initialize()
 iren.Start()
 

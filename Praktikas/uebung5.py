@@ -20,7 +20,6 @@ independentComponents = True
 colors = vtk.vtkNamedColors()
 
 
-
 #renderer
 
 ren = vtk.vtkRenderer()
@@ -49,13 +48,48 @@ iso.ComputeScalarsOff()
 iso.SetValue(0, 1150)
 iso.SetLocator(locator)
 
+#vtkplane
+
+plane = vtk.vtkPlane()
+plane.SetOrigin(100,0,0)
+plane.SetNormal(1,0,0)
+
+#create cutter
+
+cutter=vtk.vtkCutter()
+cutter.SetCutFunction(plane)
+cutter.SetInputConnection(DICOMImageReader.GetOutputPort())
+cutter.Update()
+cutterMapper=vtk.vtkPolyDataMapper()
+cutterMapper.SetInputConnection(cutter.GetOutputPort())
+
+
+#3d-Mapper
+
 isoMapper = vtk.vtkPolyDataMapper()
 isoMapper.SetInputConnection(iso.GetOutputPort())
 isoMapper.ScalarVisibilityOff()
 
+#2D-Mapper
+
+imageSliceMapper = vtk.vtkImageSliceMapper()
+imageSliceMapper.SetInputConnection(DICOMImageReader.GetOutputPort())
+imageSliceMapper.SetSliceNumber(14)
+
+#3D-Actor
 isoActor = vtk.vtkActor()
 isoActor.SetMapper(isoMapper)
 isoActor.GetProperty().SetColor(colors.GetColor3d("Wheat"))
+
+#2D-Actor
+
+imgActor= vtk.vtkImageActor()
+imgActor.SetMapper(imageSliceMapper)
+
+#create plane-Actor
+
+planeActor = vtk.vtkActor()
+planeActor.SetMapper(cutterMapper)
 
 outline = vtk.vtkOutlineFilter()
 outline.SetInputConnection(DICOMImageReader.GetOutputPort())
@@ -68,6 +102,8 @@ outlineActor.SetMapper(outlineMapper)
 
 # Add the actors to the renderer, set the background and size.
 #
+ren.AddActor(planeActor)
+ren.AddActor(imgActor)
 ren.AddActor(outlineActor)
 ren.AddActor(isoActor)
 ren.SetBackground(colors.GetColor3d("SlateGray"))

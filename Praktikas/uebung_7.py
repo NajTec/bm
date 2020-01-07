@@ -6,16 +6,11 @@ Created on Wed Dec  4 10:23:47 2019
 """
 
 import itk
-import os
-
-fixedImageFilePath = os.path.join(os.path.dirname(__file__), "pictures","fixed.png" )
-movingImageFilePath = os.path.join(os.path.dirname(__file__), "pictures","moving.png" )
 
 
 
-
-fixedImageFile = fixedImageFilePath
-movingImageFile = fixedImageFilePath
+fixedImageFile = "fixed.png"
+movingImageFile = "moving.png"
 outputImageFile = "output.png"
 differenceImageAfterFile = "after.png"
 differenceImageBeforeFile = "before.png"
@@ -30,11 +25,13 @@ MovingImageType = itk.Image[PixelType, Dimension]
 TransformType = itk.TranslationTransform[itk.D, Dimension]
 initialTransform = TransformType.New()
 
-optimizer = itk.RegularStepGradientDescentOptimizerv4.New(LearningRate=4,MinimumStepLength=0.001,RelaxationFactor=0.5,NumberOfIterations=200)
+optimizer = itk.RegularStepGradientDescentOptimizerv4.New(LearningRate=4,MinimumStepLength=0.001, RelaxationFactor=0.5, NumberOfIterations=200)
 
 metric = itk.MeanSquaresImageToImageMetricv4[FixedImageType, MovingImageType].New()
 
-registration = itk.ImageRegistrationMethodv4.New(FixedImage=fixedImage,MovingImage=movingImage,Metric=metric,Optimizer=optimizer,InitialTransform=initialTransform)
+registration = itk.ImageRegistrationMethodv4.New(FixedImage=fixedImage,
+MovingImage=movingImage, Metric=metric, Optimizer=optimizer,
+InitialTransform=initialTransform)
 
 movingInitialTransform = TransformType.New()
 initialParameters = movingInitialTransform.GetParameters()
@@ -44,7 +41,6 @@ movingInitialTransform.SetParameters(initialParameters)
 registration.SetMovingInitialTransform(movingInitialTransform)
 identityTransform = TransformType.New()
 identityTransform.SetIdentity()
-
 registration.SetFixedInitialTransform(identityTransform)
 
 registration.SetNumberOfLevels(1)
@@ -61,33 +57,33 @@ bestValue = optimizer.GetValue()
 print("Result = ")
 print(" Translation X = " + str(translationAlongX))
 print(" Translation Y = " + str(translationAlongY))
-print(" Iterations    = " + str(numberOfIterations))
-print(" Metric value  = " + str(bestValue))
+print(" Iterations = " + str(numberOfIterations))
+print(" Metric value = " + str(bestValue))
 
 CompositeTransformType = itk.CompositeTransform[itk.D, Dimension]
 outputCompositeTransform = CompositeTransformType.New()
-
 outputCompositeTransform.AddTransform(movingInitialTransform)
 outputCompositeTransform.AddTransform(registration.GetModifiableTransform())
 
-resampler = itk.ResampleImageFilter.New(Input=movingImage,Transform=outputCompositeTransform,UseReferenceImage=True,ReferenceImage=fixedImage)
+resampler = itk.ResampleImageFilter.New(Input=movingImage,
+Transform=outputCompositeTransform, UseReferenceImage=True, ReferenceImage=fixedImage)
 resampler.SetDefaultPixelValue(100)
 OutputPixelType = itk.ctype('unsigned char')
 OutputImageType = itk.Image[OutputPixelType, Dimension]
-caster = itk.CastImageFilter[FixedImageType,OutputImageType].New(Input=resampler)
-
+caster = itk.CastImageFilter[FixedImageType, OutputImageType].New(Input=resampler)
 writer = itk.ImageFileWriter.New(Input=caster, FileName=outputImageFile)
 writer.SetFileName(outputImageFile)
 writer.Update()
 
-difference = itk.SubtractImageFilter.New(Input1=fixedImage,Input2=resampler)
-intensityRescaler = itk.RescaleIntensityImageFilter[FixedImageType,OutputImageType].New(Input=difference,OutputMinimum=itk.NumericTraits[OutputPixelType].min(),OutputMaximum=itk.NumericTraits[OutputPixelType].max())
-
+difference = itk.SubtractImageFilter.New(Input1=fixedImage, Input2=resampler)
+intensityRescaler = itk.RescaleIntensityImageFilter[FixedImageType, OutputImageType].New(
+Input=difference, OutputMinimum=itk.NumericTraits[OutputPixelType].min(),
+OutputMaximum=itk.NumericTraits[OutputPixelType].max())
 resampler.SetDefaultPixelValue(1)
 writer.SetInput(intensityRescaler.GetOutput())
 writer.SetFileName(differenceImageAfterFile)
 writer.Update()
-
 resampler.SetTransform(identityTransform)
 writer.SetFileName(differenceImageBeforeFile)
 writer.Update()
+                                
