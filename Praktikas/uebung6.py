@@ -87,9 +87,9 @@ class Quaternion:
 x_axis_unit = (1, 0, 0)
 y_axis_unit = (0, 1, 0)
 z_axis_unit = (0, 0, 1)
-a_axis_unit = (0.0, 1.0, 1.0)
+a_axis_unit = (1.0, 1.0, 0.0)
 
-punkt = (5.0, 5.0, 5.0)
+punkt = (0, 0.0, 10.0)
 
 #r1 = Quaternion.from_axisangle(np.pi / 2, x_axis_unit)
 r2 = Quaternion.from_axisangle(np.pi , a_axis_unit)
